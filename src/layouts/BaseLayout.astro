@@ -1,0 +1,25 @@
+---
+const { title = 'ToyVault - Premium Toys & Games', description = 'Discover amazing toys and games for all ages' } = Astro.props;
+import '../styles/global.css';
+import '../styles/components.css';
+import '../styles/pages.css';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+<body>
+  <slot />
+</body>
+</html>

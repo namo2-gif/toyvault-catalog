@@ -1,0 +1,288 @@
+---
+// @ts-nocheck
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { getCollection } from 'astro:content';
+
+const { slug } = Astro.params;
+
+const allProducts = await getCollection('products', ({ data }) => {
+  return data.draft !== true;
+});
+
+const product = allProducts.find(p => p.slug === slug);
+
+if (!product) {
+  return Astro.redirect('/404');
+}
+
+const relatedProducts = allProducts
+  .filter(p => 
+    p.data.category === product.data.category && 
+    p.slug !== slug
+  )
+  .slice(0, 4)
+  .map(p => ({ ...p.data, slug: p.slug }));
+
+export async function getStaticPaths() {
+  const allProducts = await getCollection('products');
+  return allProducts.map(product => ({
+    params: { slug: product.slug }
+  }));
+}
+
+const categorySlug = product.data.category.toLowerCase().replace(/\s+/g, '-');
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: product.data.category, href: `/catalog/${categorySlug}` },
+  { label: product.data.title }
+];
+
+const discountPercent = product.data.sale_price 
+  ? Math.round(((product.data.price - product.data.sale_price) / product.data.price) * 100)
+  : 0;
+---
+
+<BaseLayout title={`${product.data.title} - ToyVault`}>
+  <div class="product-page">
+    <div class="container">
+      <Breadcrumb items={breadcrumbItems} />
+
+      <div class="product-detail">
+        <div class="product-gallery">
+          <div class="main-image-wrapper">
+            <img 
+              src={product.data.image} 
+              alt={product.data.title}
+              class="main-image"
+            />
+            {product.data.stock_status === 'out_of_stock' && (
+              <span class="badge out-of-stock">Out of Stock</span>
+            )}
+            {discountPercent > 0 && (
+              <span class="badge discount">-{discountPercent}%</span>
+            )}
+          </div>
+        </div>
+
+        <div class="product-info">
+          <span class="product-category">{product.data.category}</span>
+          <h1 class="product-title">{product.data.title}</h1>
+          
+          {product.data.description && (
+            <p class="product-description">{product.data.description}</p>
+          )}
+
+          <div class="product-pricing">
+            {product.data.sale_price ? (
+              <div class="pricing-sale">
+                <span class="price-current">₹{product.data.sale_price.toLocaleString('en-IN')}</span>
+                <span class="price-original">₹{product.data.price.toLocaleString('en-IN')}</span>
+                <span class="price-save">Save ₹{(product.data.price - product.data.sale_price).toLocaleString('en-IN')}</span>
+              </div>
+            ) : (
+              <span class="price-current">₹{product.data.price.toLocaleString('en-IN')}</span>
+            )}
+          </div>
+
+          <div class="product-actions">
+            {product.data.stock_status === 'in_stock' ? (
+              <button class="btn btn-primary" disabled>
+                Add to Cart <span style="font-size: 0.75rem; opacity: 0.8;">(Phase 3)</span>
+              </button>
+            ) : (
+              <button class="btn btn-primary" disabled>Out of Stock</button>
+            )}
+            <a href={`/catalog/${categorySlug}`} class="btn btn-outline">
+              Back to {product.data.category}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {relatedProducts.length > 0 && (
+        <section class="related-products">
+          <h2>Related Products</h2>
+          <div class="related-grid">
+            {relatedProducts.map(relatedProduct => (
+              <ProductCard product={relatedProduct} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .product-page {
+    min-height: 100vh;
+    padding: var(--space-lg) 0 var(--space-2xl);
+  }
+
+  .product-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .product-gallery {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+  }
+
+  .main-image-wrapper {
+    position: relative;
+    width: 100%;
+    background: var(--light-gray);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    aspect-ratio: 1;
+  }
+
+  .main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+  }
+
+  .badge.out-of-stock {
+    background: var(--danger);
+    color: var(--white);
+  }
+
+  .badge.discount {
+    background: var(--success);
+    color: var(--white);
+  }
+
+  .product-info {
+    padding: var(--space-md) 0;
+  }
+
+  .product-category {
+    display: inline-block;
+    font-size: 0.875rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+  }
+
+  .product-title {
+    font-size: 2.5rem;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .product-description {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--gray);
+    margin-bottom: var(--space-lg);
+  }
+
+  .product-pricing {
+    margin-bottom: var(--space-lg);
+    padding: var(--space-md) 0;
+    border-top: 2px solid var(--light-gray);
+    border-bottom: 2px solid var(--light-gray);
+  }
+
+  .pricing-sale {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .price-current {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .pricing-sale .price-current {
+    color: var(--danger);
+  }
+
+  .price-original {
+    font-size: 1.5rem;
+    color: var(--gray);
+    text-decoration: line-through;
+  }
+
+  .price-save {
+    font-size: 1rem;
+    color: var(--success);
+    font-weight: 600;
+  }
+
+  .product-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .product-actions .btn {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .related-products {
+    margin-top: var(--space-2xl);
+  }
+
+  .related-products h2 {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--space-lg);
+  }
+
+  @media (max-width: 768px) {
+    .product-detail {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+
+    .product-gallery {
+      position: static;
+    }
+
+    .product-title {
+      font-size: 1.75rem;
+    }
+
+    .product-actions {
+      flex-direction: column;
+    }
+
+    .product-actions .btn {
+      width: 100%;
+    }
+
+    .related-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm);
+    }
+  }
+</style>

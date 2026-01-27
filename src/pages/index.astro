@@ -1,17 +1,54 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 
+const categories = [
+  { name: 'Action Figures', icon: '🦸', slug: 'action-figures' },
+  { name: 'Dolls', icon: '👧', slug: 'dolls' },
+  { name: 'Cars & Vehicles', icon: '🚗', slug: 'cars-vehicles' },
+  { name: 'Building Blocks', icon: '🧱', slug: 'building-blocks' },
+  { name: 'Board Games', icon: '🎲', slug: 'board-games' },
+  { name: 'Puzzles', icon: '🧩', slug: 'puzzles' },
+  { name: 'Educational', icon: '📚', slug: 'educational' },
+  { name: 'Outdoor', icon: '⚽', slug: 'outdoor' }
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="ToyVault - Premium Toys & Games" description="Discover amazing toys and games for all ages at ToyVault">
+  <Header />
+  
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>Welcome to ToyVault</h1>
+        <p>Discover Premium Toys & Games for All Ages</p>
+        <a href="/catalog" class="btn btn-primary">Browse Catalog</a>
+      </div>
+    </section>
+    
+    <!-- Categories Section -->
+    <section class="container">
+      <h2 class="section-title">Shop by Category</h2>
+      <div class="category-grid">
+        {categories.map(category => (
+          <a href={`/catalog/${category.slug}`} class="category-card">
+            <div class="category-icon">{category.icon}</div>
+            <div class="category-name">{category.name}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+    
+    <!-- Featured Section (placeholder for Phase 2) -->
+    <section class="container home-featured">
+      <h2 class="section-title">Featured Products</h2>
+      <p class="text-center" style="color: var(--gray);">
+        Products will appear here in Phase 2
+      </p>
+    </section>
+  </main>
+  
+  <Footer />
+</BaseLayout>

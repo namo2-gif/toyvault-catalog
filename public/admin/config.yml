@@ -1,0 +1,35 @@
+backend:
+  name: github
+  repo: namo2-gif/toyvault-catalog  # Change this!
+  branch: main
+  
+# Local development
+local_backend: true
+
+# Editorial workflow (batch publishing)
+publish_mode: editorial_workflow
+
+# Media files
+media_folder: "public/images/uploads"
+public_folder: "/images/products"
+
+# Collections
+collections:
+  - name: "products"
+    label: "Products"
+    folder: "src/content/products"
+    create: true
+    slug: "{{slug}}"
+    editor:
+      preview: false
+    fields:
+      - { label: "Product Name", name: "title", widget: "string" }
+      - { label: "Category", name: "category", widget: "select", options: ["action-figures", "dolls", "cars-vehicles", "building-blocks", "board-games", "puzzles", "educational", "outdoor"] }
+      - { label: "Price (₹)", name: "price", widget: "number" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "In Stock", name: "inStock", widget: "boolean", default: true }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
+      - { label: "Age Range", name: "ageRange", widget: "string", required: false }
+      - { label: "Brand", name: "brand", widget: "string", required: false }
+      

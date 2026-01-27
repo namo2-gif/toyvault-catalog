@@ -11,6 +11,8 @@ npm create astro@latest -- --template minimal
 Inside of your Astro project, you'll see the following folders and files:
 
 ```text
+Ov23liIsYYDat3luZX0C
+c513135277d0ba73ce61f86ebc7fff67be2e8346
 /
 ├── public/
 ├── src/

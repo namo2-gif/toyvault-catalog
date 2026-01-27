@@ -1,0 +1,54 @@
+---
+// @ts-nocheck
+import ProductCard from './ProductCard.astro';
+
+const { products, emptyMessage = "No products found" } = Astro.props;
+---
+
+<div class="product-grid">
+  {products && products.length > 0 ? (
+    <div class="product-grid__items">
+      {products.map((product) => (
+        <ProductCard product={product} />
+      ))}
+    </div>
+  ) : (
+    <div class="product-grid__empty">
+      <p>{emptyMessage}</p>
+    </div>
+  )}
+</div>
+
+<style>
+  .product-grid {
+    width: 100%;
+  }
+
+  .product-grid__items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin: 0;
+  }
+
+  .product-grid__empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray);
+    font-size: 1.125rem;
+  }
+
+  @media (max-width: 1024px) {
+    .product-grid__items {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--space-md);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .product-grid__items {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm);
+    }
+  }
+</style>

@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="About Us - ToyVault" description="Learn about ToyVault's mission to bring joy through quality toys">
+  <Header />
+  
+  <main class="container about-content">
+    <h1>About ToyVault</h1>
+    
+    <p>Welcome to ToyVault, your premier destination for quality toys and games that bring joy to children and families.</p>
+    
+    <h2>Our Story</h2>
+    <p>Founded in 2026, ToyVault was born from a passion for childhood wonder and the belief that play is essential to development. We carefully curate our collection to include only the best toys that inspire creativity, learning, and fun.</p>
+    
+    <h2>Our Mission</h2>
+    <p>To provide families with access to high-quality, safe, and engaging toys that create lasting memories and support child development.</p>
+    
+    <h2>Why Choose ToyVault?</h2>
+    <ul style="margin-left: var(--space-lg);">
+      <li>Carefully curated selection of 2000+ premium toys</li>
+      <li>Quality guaranteed - we test every product</li>
+      <li>Fast and reliable delivery across India</li>
+      <li>Excellent customer service</li>
+      <li>Competitive pricing</li>
+    </ul>
+    
+    <h2>Contact Us</h2>
+    <p>Have questions? We'd love to hear from you! Visit our <a href="/contact">contact page</a> or reach us at hello@toyvault.com</p>
+  </main>
+  
+  <Footer />
+</BaseLayout>

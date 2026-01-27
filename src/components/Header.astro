@@ -1,0 +1,56 @@
+---
+// Header with navigation
+---
+
+<header class="header">
+  <div class="header-container">
+    <a href="/" class="logo">
+      🧸 ToyVault
+    </a>
+    
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12h18M3 6h18M3 18h18"/>
+      </svg>
+    </button>
+    
+    <nav class="nav" id="mainNav">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/catalog" class="nav-link">Catalog</a>
+      <a href="/about" class="nav-link">About</a>
+      <a href="/contact" class="nav-link">Contact</a>
+      <a href="/cart" class="nav-link">
+        🛒 Cart
+        <span id="cartBadge" class="cart-badge" style="display: none;">0</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .cart-badge {
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+</style>
+
+<script>
+  // Mobile menu toggle
+  document.getElementById('menuToggle')?.addEventListener('click', () => {
+    const nav = document.getElementById('mainNav');
+    nav?.classList.toggle('active');
+  });
+  
+  // Active link highlighting
+  const currentPath = window.location.pathname;
+  document.querySelectorAll('.nav-link').forEach(link => {
+    if (link.getAttribute('href') === currentPath) {
+      link.classList.add('active');
+    }
+  });
+</script>

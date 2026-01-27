@@ -1,0 +1,208 @@
+---
+    // @ts-nocheck
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductGrid from '../../components/ProductGrid.astro';
+import SearchBar from '../../components/SearchBar.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { getCollection } from 'astro:content';
+
+const { category } = Astro.params;
+
+const allProducts = await getCollection('products', ({ data }) => {
+  return data.draft !== true;
+});
+
+const categoryProducts = allProducts.filter(product => 
+  product.data.category.toLowerCase().replace(/\s+/g, '-') === category.toLowerCase()
+);
+
+const categoryName = categoryProducts[0]?.data.category || category.replace(/-/g, ' ');
+const allCategories = [...new Set(allProducts.map(p => p.data.category))].sort();
+
+export async function getStaticPaths() {
+  const allProducts = await getCollection('products');
+  const categories = [...new Set(allProducts.map(p => p.data.category))];
+  
+  return categories.map(cat => ({
+    params: { 
+      category: cat.toLowerCase().replace(/\s+/g, '-') 
+    }
+  }));
+}
+
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: categoryName }
+];
+
+const products = categoryProducts.map(product => ({
+  ...product.data,
+  slug: product.slug
+}));
+---
+
+<BaseLayout title={`${categoryName} - ToyVault`}>
+  <div class="category-page">
+    <div class="container">
+      <Breadcrumb items={breadcrumbItems} />
+      
+      <div class="category-header">
+        <h1>{categoryName}</h1>
+        <p class="category-count">{products.length} product{products.length !== 1 ? 's' : ''}</p>
+      </div>
+
+      <div class="category-search">
+        <SearchBar />
+      </div>
+
+      <div class="category-layout">
+        <aside class="category-sidebar">
+          <h3>Categories</h3>
+          <nav class="category-nav">
+            {allCategories.map(cat => {
+              const catSlug = cat.toLowerCase().replace(/\s+/g, '-');
+              const isActive = catSlug === category.toLowerCase();
+              return (
+                <a 
+                  href={`/catalog/${catSlug}`}
+                  class={`category-nav-item ${isActive ? 'active' : ''}`}
+                >
+                  {cat}
+                  <span class="category-nav-count">
+                    ({allProducts.filter(p => p.data.category === cat).length})
+                  </span>
+                </a>
+              );
+            })}
+          </nav>
+          
+          <a href="/" class="sidebar-back">← Back to Home</a>
+        </aside>
+
+        <main class="category-content">
+          <ProductGrid products={products} />
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: none;">
+    {products.map(product => (
+      <div 
+        data-product
+        data-title={product.title}
+        data-slug={product.slug}
+        data-category={product.category}
+        data-price={product.price}
+        data-image={product.image}
+      ></div>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .category-page {
+    min-height: 100vh;
+    padding: var(--space-lg) 0;
+  }
+
+  .category-header {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+  }
+
+  .category-header h1 {
+    text-transform: capitalize;
+    margin-bottom: var(--space-xs);
+  }
+
+  .category-count {
+    color: var(--gray);
+    margin: 0;
+  }
+
+  .category-search {
+    margin-bottom: var(--space-xl);
+  }
+
+  .category-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: var(--space-xl);
+  }
+
+  .category-sidebar {
+    position: sticky;
+    top: 100px;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    height: fit-content;
+  }
+
+  .category-sidebar h3 {
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .category-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .category-nav-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm);
+    text-decoration: none;
+    color: var(--dark);
+    border-radius: var(--border-radius);
+    transition: all var(--transition);
+    font-weight: 500;
+  }
+
+  .category-nav-item:hover {
+    background: var(--light-gray);
+    color: var(--primary);
+  }
+
+  .category-nav-item.active {
+    background: var(--primary);
+    color: var(--white);
+  }
+
+  .category-nav-count {
+    font-size: 0.875rem;
+    opacity: 0.7;
+  }
+
+  .sidebar-back {
+    display: block;
+    margin-top: var(--space-md);
+    padding: var(--space-sm);
+    text-align: center;
+    text-decoration: none;
+    color: var(--gray);
+    border: 2px solid var(--light-gray);
+    border-radius: var(--border-radius);
+    transition: all var(--transition);
+  }
+
+  .sidebar-back:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  @media (max-width: 768px) {
+    .category-layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+
+    .category-sidebar {
+      position: static;
+    }
+  }
+</style>

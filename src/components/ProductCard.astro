@@ -1,0 +1,201 @@
+---
+const { product } = Astro.props;
+const productImage = product.image || '/images/products/placeholder.jpg';
+const productSlug = product.slug || product.title.toLowerCase().replace(/\s+/g, '-');
+---
+
+<article class="product-card">
+  <a href={`/product/${productSlug}`} class="product-card__link">
+    <div class="product-card__image-wrapper">
+      <img 
+        src={productImage} 
+        alt={product.title}
+        class="product-card__image"
+        loading="lazy"
+      />
+      {product.stock_status === 'out_of_stock' && (
+        <span class="product-card__badge product-card__badge--out">Out of Stock</span>
+      )}
+      {product.is_featured && (
+        <span class="product-card__badge product-card__badge--featured">Featured</span>
+      )}
+    </div>
+    
+    <div class="product-card__content">
+      <p class="product-card__category">{product.category}</p>
+      <h3 class="product-card__title">{product.title}</h3>
+      
+      {product.description && (
+        <p class="product-card__description">
+          {product.description.substring(0, 80)}{product.description.length > 80 ? '...' : ''}
+        </p>
+      )}
+      
+      <div class="product-card__footer">
+        <div class="product-card__pricing">
+          {product.sale_price ? (
+            <>
+              <span class="product-card__price product-card__price--sale">
+                ₹{product.sale_price.toLocaleString('en-IN')}
+              </span>
+              <span class="product-card__price product-card__price--original">
+                ₹{product.price.toLocaleString('en-IN')}
+              </span>
+            </>
+          ) : (
+            <span class="product-card__price">
+              ₹{product.price.toLocaleString('en-IN')}
+            </span>
+          )}
+        </div>
+        
+        <span class="product-card__cta">View Details →</span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .product-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .product-card__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-card__image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    background: var(--light-gray);
+    overflow: hidden;
+  }
+
+  .product-card__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition);
+  }
+
+  .product-card:hover .product-card__image {
+    transform: scale(1.05);
+  }
+
+  .product-card__badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 1;
+  }
+
+  .product-card__badge--out {
+    background: var(--danger);
+    color: var(--white);
+  }
+
+  .product-card__badge--featured {
+    background: var(--primary);
+    color: var(--white);
+  }
+
+  .product-card__content {
+    padding: var(--space-md);
+  }
+
+  .product-card__category {
+    font-size: 0.75rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .product-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
+    color: var(--dark);
+  }
+
+  .product-card__description {
+    font-size: 0.875rem;
+    color: var(--gray);
+    line-height: 1.5;
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .product-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-sm);
+  }
+
+  .product-card__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .product-card__price {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .product-card__price--sale {
+    color: var(--danger);
+  }
+
+  .product-card__price--original {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--gray);
+    text-decoration: line-through;
+  }
+
+  .product-card__cta {
+    font-size: 0.875rem;
+    color: var(--primary);
+    font-weight: 500;
+  }
+
+  .product-card:hover .product-card__cta {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .product-card__content {
+      padding: var(--space-sm);
+    }
+    .product-card__title {
+      font-size: 0.9375rem;
+    }
+    .product-card__price {
+      font-size: 1rem;
+    }
+  }
+</style>
