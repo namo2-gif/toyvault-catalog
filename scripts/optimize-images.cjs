@@ -54,4 +54,32 @@ async function processImages() {
   }
 }
 
-processImages();
+async function cleanupOrphanedImages() {
+  const productsDir = path.join(__dirname, '../public/images/products');
+  const contentDir = path.join(__dirname, '../src/content/products');
+  
+  try {
+    const imageFiles = await fs.readdir(productsDir);
+    const mdFiles = await fs.readdir(contentDir);
+    
+    const referencedImages = new Set();
+    for (const mdFile of mdFiles) {
+      const content = await fs.readFile(path.join(contentDir, mdFile), 'utf-8');
+      const match = content.match(/image:\s*["']?([^"'\n]+)["']?/);
+      if (match) {
+        referencedImages.add(path.basename(match[1]));
+      }
+    }
+    
+    for (const imageFile of imageFiles) {
+      if (!referencedImages.has(imageFile)) {
+        await fs.unlink(path.join(productsDir, imageFile));
+        console.log(`🗑️  Deleted: ${imageFile}`);
+      }
+    }
+  } catch (err) {
+    console.error('Cleanup error:', err.message);
+  }
+}
+
+processImages().then(() => cleanupOrphanedImages()).catch(console.error);

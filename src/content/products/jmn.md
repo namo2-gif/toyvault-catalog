@@ -1,8 +1,8 @@
 ---
-title: barbie
-category: dolls
-price: 240
-description: lkio
+title: jmn
+category: action-figures
+price: 65
+description: hjjhbgv
 image: /images/products/barbiie.jpg
 inStock: true
 featured: false
